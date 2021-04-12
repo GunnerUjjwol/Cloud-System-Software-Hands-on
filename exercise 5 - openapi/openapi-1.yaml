@@ -1,0 +1,237 @@
+  
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger Course
+  description: A sample API that uses a course as an example to demonstrate features in the swagger-2.0 specification
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Ujjwol Dandekhya
+    email: ujjwol.dandekhya@aaalto.fi
+  license:
+    name: MIT
+    url: http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT
+servers:
+  - url: http://course.swagger.io/api
+paths:
+  /courses:
+    get:
+      description: Returns all courses from the system that the user has access to
+      operationId: findCourses
+      parameters:
+        - name: course_type
+          in: query
+          description: course_type to filter by
+          required: false
+          schema:
+            type: string
+        - name: semester
+          in: query
+          description: semester to filter by
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: course response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Courses'
+        '404':
+          description: Courses Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /course:
+    post:
+      description: Creates a new course in the store.
+      operationId: addCourse
+      requestBody:
+        description: Course to add to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /course/{course_id}:
+    get:
+      description: Returns a course based on a single ID
+      operationId: find course by id
+      parameters:
+        - name: course_id
+          in: path
+          description: ID of course to fetch
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: course response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Course'
+        '404':
+          description: Course Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      description: Updates a course based on ID
+      operationId: update course by id
+      parameters:
+        - name: course_id
+          in: path
+          description: ID of course to update
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Course content to update to the store
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Course'
+      responses:
+        '200':
+          description: course response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Success'
+        '404':
+          description: Course Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '422':
+          description: Unprocessable entity
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      description: deletes a single course based on the ID supplied
+      operationId: deleteCourse
+      parameters:
+        - name: course_id
+          in: path
+          description: ID of course to delete
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: course deleted
+        '404':
+          description: Course Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Course:
+      required:
+      - "code"
+      - "name"
+      - "course_type"
+      - "semester"
+      - "starting_date"
+      - "ending_date"
+      properties:
+        id:
+          type: "string"
+          readOnly: true
+        code:
+          type: "string"
+          maxLength: 10
+        name:
+          type: "string"
+          example: "Cloud"
+          maxLength: 20
+        description:
+          type: "string"
+          maxLength: 30
+        course_type:
+          type: "string"
+          description: "Course Type"
+          enum:
+          - "compulsory"
+          - "optional"
+        semester:
+          type: "string"
+          description: "Semester"
+          enum:
+          - "autumn"
+          - "spring"
+        starting_date:
+          type: "string"
+          format: "date-time"
+        ending_date:
+          type: "string"
+          format: "date-time"
+    Courses:
+      type: "array"
+      items:
+        $ref: "#/components/schemas/Course"
+    Success:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+        id:
+          type: "string"
+    Error:
+      type: "object"
+      properties:
+        message:
+          type: string

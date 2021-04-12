@@ -1,0 +1,142 @@
+openapi: 3.0.0
+info:
+  title: Sample API
+  description: Optional multiline or single-line description in [CommonMark](http://commonmark.org/help/) or HTML.
+  version: 0.1.9
+servers:
+  - url: http://api.example.com/v1
+    description: Optional server description, e.g. Main (production) server
+  - url: http://staging-api.example.com
+    description: Optional server description, e.g. Internal staging server for testing
+paths:
+  /course:
+    post:
+      tags:
+      - "course"
+      summary: "Add a new course to the store"
+      description: ""
+      operationId: "addCourse"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Course object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Course"
+      responses:
+        "405":
+          description: "Invalid input"
+    put:
+      tags:
+      - "course"
+      summary: "Update an existing course"
+      description: ""
+      operationId: "updateCourse"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Course object that needs to be added to the store"
+        required: true
+        schema:
+          $ref: "#/definitions/Course"
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Course not found"
+        "405":
+          description: "Validation exception"
+  /course/{courseId}:
+    get:
+      tags:
+      - "course"
+      summary: "Find course by ID"
+      description: "Returns a single course"
+      operationId: "getCourseById"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - name: "courseId"
+        in: "path"
+        description: "ID of course to return"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/Course"
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Course not found"
+components:
+  schemas:
+    Course:
+      type: "object"
+      required:
+      - "code"
+      - "name"
+      - "course_type"
+      - "semester"
+      - "starting_date"
+      - "ending_date"
+      properties:
+        id:
+          type: "string"
+          readOnly: true
+        code:
+          type: "string"
+          maxLength: 10
+        name:
+          type: "string"
+          example: "Cloud"
+          maxLength: 20
+        description:
+          type: "string"
+          maxLength: 30
+        course_type:
+          type: "string"
+          description: "Course Type"
+          enum:
+          - "compulsory"
+          - "optional"
+        semester:
+          type: "string"
+          description: "Semester"
+          enum:
+          - "autumn"
+          - "spring"
+        starting_date:
+          type: "string"
+          format: "date-time"
+        ending_date:
+          type: "string"
+          format: "date-time"
+      xml:
+        name: "Course"
+    Courses:
+      type: "array"
+      items:
+        $ref: "#/definitions/Course"
+    Success:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+        id:
+          type: "string"
+      xml:
+        name: "Success"
+    Error:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+      xml:
+        name: "Error"
+externalDocs:
+  description: "Find out more about Swagger"
+  url: "http://swagger.io"
